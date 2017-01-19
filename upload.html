@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Speaking Practice | Record</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--    <link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <link href="https://bootswatch.com/superhero/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/transcription.js"></script>
+
+    <!--    <script src="js/jquery-1.11.3.min.js"></script>-->
+    <script src="js/bootstrap.js"></script>
+    <script>
+        var loc = window.location.href + '';
+        if (loc.indexOf('http://') == 0) {
+            window.location.href = loc.replace('http://', 'https://');
+        }
+    </script>
+
+    <!--LIBRARY-->
+    <script src="library/clmtrackr.js"></script>
+    <script src="library/d3.min.js"></script>
+    <script src="library/emotion_classifier.js"></script>
+    <script src="library/emotionmodel.js"></script>
+    <script src="library/model_pca_20_svm_emotionDetection.js"></script>
+    <script src="library/utils.js"></script>
+
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+
+    <!-- for Edige/FF/Chrome/Opera/etc. getUserMedia support -->
+    <script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
+    <script type="text/javascript" src="js/pitchdetect.js"></script>
+
+    <script src="https://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
+
+
+    <style>
+        #overlay {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            -o-transform: scaleX(-1);
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            -ms-filter: fliph;
+            /*IE*/
+            filter: fliph;
+            /*IE*/
+            width: 560px;
+            height: 420px;
+        }
+        
+        #videoel {
+            -o-transform: scaleX(-1);
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            -ms-filter: fliph;
+            /*IE*/
+            filter: fliph;
+            /*IE*/
+            width: 560px;
+            height: 420px;
+        }
+        
+        #container {
+            position: relative;
+            width: 370px;
+            /*margin : 0px auto;*/
+        }
+        
+        #content {
+            margin-top: 50px;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 600px;
+        }
+        
+        #sketch,
+        #filter {
+            display: none;
+        }
+        
+        h2 {
+            font-weight: 400;
+        }
+        
+        .btn {
+            font-family: 'Lato';
+            font-size: 16px;
+        }
+        
+        #controls {
+            text-align: center;
+        }
+        
+        #emotion_container {
+            width: 600px;
+        }
+        
+        #emotion_icons {
+            height: 50px;
+            padding-left: 40px;
+        }
+        
+        .emotion_icon {
+            width: 40px;
+            height: 40px;
+            margin-top: 5px;
+            /*margin-left : 13px;*/
+            margin-left: 35px;
+        }
+        
+        #emotion_chart,
+        #emotion_icons {
+            margin: 0 auto;
+            width: 400px;
+        }
+        
+        #icon1,
+        #icon2,
+        #icon3,
+        #icon4,
+        #icon5,
+        #icon6 {
+            visibility: hidden;
+        }
+        /* d3 */
+        
+        .bar {
+            fill: steelblue;
+            fill-opacity: .9;
+        }
+        
+        .arrow {
+            margin: 0 20px;
+        }
+        
+        .recordrtc button,
+        .recordrtc select {
+            vertical-align: middle;
+            line-height: 1;
+            /*            padding: 20px 30px;*/
+            height: auto;
+            font-size: 1.3em;
+            /*            font-size: inherit;*/
+            margin: 0;
+        }
+        
+        .recordrtc,
+        .recordrtc .header {
+            display: block;
+            text-align: center;
+            padding-top: 0;
+        }
+        
+        .recordrtc video {
+            width: 50%;
+        }
+        
+        #speechVid {
+            /*background: yellow;*/
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+
+                <a class="navbar-brand" href="index.html">Practice Speaking</a>
+
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="upload.html">Record</a>
+                    </li>
+                    <li>
+                        <a href="analysis.php">Analysis</a>
+                    </li>
+                    <li>
+                        <a href="http://web.sfc.keio.ac.jp/~t13779yh/FAQ/">FAQ</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    <article>
+        <section style="margin-top: 70px;">
+            <h1 style="text-align:center; margin-bottom:50px">Recording Requirements</h1>
+            <div class="container" style="padding-left:0; padding-right:0;">
+                <div class="row" style="max-width: 800px; margin-left:auto; margin-right: auto">
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4><i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   Sound Input at Max
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/mic.svg">
+                    </div>
+
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4>
+                   <i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   Latest Chrome Version
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/chrome.svg">
+                    </div>
+
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4>
+                   <i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   No external Mic
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/earphone.svg">
+                    </div>
+
+                </div>
+                <div class="row" style="max-width: 800px; margin-left:auto; margin-right: auto">
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4>
+                   <i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   80cm away from screen
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/screenDistance.svg">
+                    </div>
+
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4>
+                   <i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   Imagine Audience
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/audience.svg">
+                    </div>
+
+                    <div class="col-xs-4 centerBlock center-block addMarginBottom">
+                        <h4>
+                   <i class="material-icons" style="font-size:34px; vertical-align:sub; color:red">done</i>
+                   No Switching Tabs
+               </h4>
+                        <br>
+                        <img style="height:100px" src="img/tab.svg">
+                    </div>
+
+                </div>
+            </div>
+
+
+        </section>
+
+
+
+
+
+
+        <section class="recordrtc container" style="margin-top: 70px">
+            <br>
+            <br>
+            <h1>Your Recording</h1>
+            <p>It will be on while you record</p>
+            <video muted id="speechVid"></video>
+            <div class="addSmallerMarginTop">
+                <button id="start_button" class="btn btn-default btn-lg">Start Recording</button>
+                <div id="progress_outer" class="progress addSmallerMarginTop" style="max-width:800px; margin-right:auto; margin-left:auto; display:none">
+                    <div id="progress_inner" class="progress-bar progress-bar-info" style="width: 0%;"></div>
+                </div>
+                <div id="progress_state"></div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+        </section>
+
+
+
+        <div style="width:100%; text-align:center;">
+
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h1>Configuration</h1>
+            <p>Make sure You are appropriately recognized by the computer!
+                <!--                <br> Instead of looking at the Recording Section, You can also check this screen while you record-->
+            </p>
+            <br>
+            <br>
+            <br>
+            <br>
+
+        </div>
+
+        <!-- NEW HERE!!-->
+        <div class="container">
+            <br>
+            <div class="row">
+                <!--left side-->
+                <div class="col-md-6" style="padding-left:0;">
+                    <div id="container">
+                        <video id="videoel" width="400" height="300" preload="auto" loop>
+                        </video>
+                        <canvas id="overlay" width="400" height="300"></canvas>
+                    </div>
+                    <canvas id="sketch" width="400" height="300"></canvas>
+                    <div id="emotion_container">
+                        <div id='emotion_chart'></div>
+                    </div>
+                </div>
+
+                <!--right side-->
+                <div class="col-md-6">
+
+                    <!--FOR VOLUME HTML-->
+                    <section style="margin-bottom:30px;">
+                        <h4>VOLUME</h4>
+                        <canvas id="meter" width="500" height="50"></canvas>
+                    </section>
+                    <section style="margin-bottom:30px;">
+                        <h4>PITCH</h4>
+                        <div id="detector">
+                            <div class="pitch"><span id="pitch">--</span>Hz</div>
+                        </div>
+                    </section>
+
+                    <!--FOR TRANSCRIPTION HTML-->
+                    <section style="margin-bottom:30px;">
+                        <h4>TRANSCRIPT</h4>
+                        <div id="instructions">&nbsp;</div>
+                        <textarea id="result_text" style="width:100%" rows="7">
+                        </textarea>
+                        <p>&nbsp;</p>
+                        <div id="transcript">&nbsp;</div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+            var on = false;
+
+            $("#start_button").click(function (e) {
+                if (on === false) {
+                    on = true;
+                    console.log(on);
+                    timerStart();
+                    pitchArray.length = 0;
+                } else {
+                    on = false;
+                    console.log(on);
+                    timerStop();
+                    console.log(pitchArray);
+                    console.log(mySeconds);
+                }
+            });
+
+            function returnArrayWithNoNull(data) {
+                var temp_array = [];
+                var count = 0;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] == null) {
+                        count++;
+                    } else {
+                        temp_array.push(data[i]);
+                    }
+                }
+
+                for (var i = 0; i < count; i++) {
+                    temp_array.unshift(temp_array[0]);
+                }
+
+                return temp_array;
+            }
+
+            function deleteNullFromArray(data) {
+                var temp_array = [];
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] == null) {} else {
+                        temp_array.push(data[i]);
+                    }
+                }
+                return temp_array;
+            }
+
+            function calculateVariance(data) {
+                // calculate the mean first
+                var mean;
+                var addition = 0;
+                for (var i = 0; i < data.length; i++) {
+                    addition += data[i];
+                }
+                mean = addition / data.length;
+
+                // calculate the Variance
+                var temp_array = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    temp_array[i] = Math.abs(data[i] - mean);
+                    temp_array[i] = Math.round(temp_array[i]);
+                }
+                return temp_array;
+            }
+
+            function addArrayDataDivideByTime(data, howLong) {
+                var answer = 0;
+                for (var i = 0; i < data.length; i++) {
+                    answer += data[i];
+                }
+                answer = answer / howLong;
+                //answer = answer.toFixed(2);
+                answer = cutDecimal(answer);
+                return answer;
+            }
+
+            function add4Array(data1, data2, data3, data4) {
+                var temp_array = [];
+                if (data1.length == data2.length && data3.length == data4.length && data1.length == data4.length) {
+                    for (var i = 0; i < data1.length; i++) {
+                        temp_array[i] = data1[i] + data2[i] + data3[i] + data4[i];
+                    }
+                }
+                return temp_array;
+            }
+
+            function minimizeData(data) {
+                var min = Math.min.apply(null, data);
+                var temp_array = [];
+                for (var i = 0; i < data.length; i++) {
+                    temp_array[i] = data[i] - min;
+                }
+                return temp_array;
+            }
+
+            /*
+            function countSilence(data, howLong) {
+                var section = Math.round(data.length / howLong);
+                var count = 0;
+                var c = 0;
+
+                // get the minimum value in the data -> minimum + 2(margin) is the limit
+                var min = Math.min.apply(null, data);
+                var limit = min + 2;
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] <= limit) {
+                        c++;
+                    }
+
+                    if (i == data.length - 1 || data[i] > limit) {
+                        if (c > section * 2 || c < section) {
+                            c = 0;
+                        } else if (c >= section && c <= section * 2) {
+                            count++;
+                            c = 0;
+                        }
+                    }
+
+                }
+                return count;
+            }
+*/
+            function countPauseAvg(data, howLong) {
+                var section = Math.round(data.length / howLong);
+                var addedUpVal = 0;
+                var count = 0;
+                var c = 0;
+                var temp_pause_second = 0;
+                var avgPause = 0;
+                console.log("section: " + section);
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] == null) {
+                        c++;
+                    }
+
+                    if (data[i] != null || i == data.length - 1) {
+                        if (c > section * 0.5 && c < section * 5) { // ignore intentional or super short ones
+                            //                            console.log(i - c + " + " + i + " = " + c / section);
+                            addedUpVal += c;
+                            count++;
+                        }
+                        c = 0;
+                    }
+                }
+                avgPause = cutDecimal(addedUpVal / count / section);
+                if (avgPause == null) avgPause = 0;
+                return avgPause;
+            }
+
+            function getPauseScore(avgPauseVal) {
+                var answer = 0;
+
+                if (avgPauseVal >= 1 && avgPauseVal <= 2) {
+                    answer = 10;
+                } else if (avgPauseVal < 1) {
+                    answer = map_range(avgPauseVal, 0.5, 1, 0, 10);
+                } else if (avgPauseVal > 2) {
+                    answer = map_range(avgPauseVal, 2, 5, 0, 10);
+                    answer = 10 - answer;
+                }
+                if (answer < 0) answer = 0;
+                answer = Math.floor(answer);
+                return answer;
+            }
+
+            function getSpeedScore(wpm) {
+                var temp_val = 0;
+                if (wpm >= 125) {
+                    temp_val = map_range(wpm, 125, 200, 0, 10);
+                    temp_val = 10 - temp_val;
+                } else {
+                    temp_val = map_range(wpm, 50, 124, 0, 10);
+                }
+
+                if (temp_val < 0) temp_val = 0;
+                //return temp_val.toFixed(2);
+                temp_val = Math.floor(temp_val);
+                return temp_val;
+            }
+            /*
+            function getPitchScore(pitchVal) {
+                var temp_val = 0;
+                if (pitchVal >= 28000) {
+                    temp_val = map_range(pitchVal, 28000, 45000, 0, 10);
+                    temp_val = 10 - temp_val;
+                } else {
+                    temp_val = map_range(pitchVal, 6000, 28000, 0, 10);
+                }
+
+                if (temp_val < 0) temp_val = 0;
+                temp_val = cutDecimal(temp_val);
+                return temp_val;
+            }*/
+
+            function map_range(value, low1, high1, low2, high2) {
+                return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+            }
+
+            function cutDecimal(someNumber) {
+                var temp_val = Math.round(someNumber * 1e2) / 1e2;
+                return temp_val;
+            }
+
+            function getWPM(wordLength, time) {
+                // best time = seconds 125words/60sec = 2.083333...per sec
+                // cut off decimal points to 2
+                var wordPerMinute = (wordLength / time) * 60;
+                wordPerMinute = wordPerMinute * 1.05;
+                wordPerMinute = Math.round(wordPerMinute);
+                return wordPerMinute;
+            }
+
+            function addAllInArray(data) {
+                var total = 0;
+                for (var i = 0; i < data.length; i++) {
+                    total += data[i];
+                }
+                return total;
+            }
+
+            function getGazeScore(data, vidLength) {
+                // 3 ~ 5 second is the best;
+                // frequency with deletion of the movement = 1sec -> x=(vidlength-x)/5
+                var minIdealFrequency = vidLength / (5 + 1); // if 30sec = 5 times
+                var maxIdealFrequency = vidLength / (3 + 1); // if 30sec = 7.5 times
+                var maxFrequency = vidLength / 2; // if 30sec = 15 times
+                var answer = 0;
+
+                if (data <= maxIdealFrequency && data >= minIdealFrequency) {
+                    answer = 10;
+                } else {
+                    if (data > maxIdealFrequency) {
+                        answer = map_range(data, maxIdealFrequency, maxFrequency, 0, 10);
+                        answer = 10 - answer;
+                        //                        console.log("too much");
+                    } else if (data < minIdealFrequency) {
+                        answer = map_range(data, 0, minIdealFrequency, 0, 10);
+                        //                        console.log("too little")
+                    }
+                }
+
+                if (answer < 0) answer = 0;
+                answer = Math.floor(answer);
+                return answer;
+            }
+
+            function getMood(smileVal) {
+                if (smileVal < 200) return 0;
+                else if (smileVal < 300) return 1;
+                else return 2;
+            }
+
+            function getVolumeScore(val) {
+                var limit = 100;
+                var temp_score = 0;
+
+                if (val >= limit) {
+                    temp_score = 10;
+                } else {
+                    temp_score = map_range(val, 0, limit, 0, 10);
+                }
+
+                if (temp_score < 0) {
+                    temp_score = 0;
+                }
+
+                return Math.floor(temp_score);
+            }
+
+            var fillerWords = ["absolutely ", "actual ", "actually ", "amazing ", "anyway ", "apparently ", "approximately ", "badly ", "basically ", "begin ", "certainly ", "clearly ", "completely ", "definitely ", "easily ", "effectively ", "entirely ", "especially ", "essentially ", "exactly ", "extremely ", "fairly ", "frankly ", "frequently ", "fully ", "generally ", "hardly ", "heavily ", "highly ", "hopefully ", "just ", "largely ", "like ", "literally ", "maybe ", "might ", "most ", "mostly ", "much ", "necessarily ", "nicely ", "obviously ", "ok ", "okay ", "particularly ", "perhaps ", "possibly ", "practically ", "precisely ", "primarily ", "probably ", "quite ", "rather ", "real ", "really ", "relatively ", "right ", "seriously ", "significantly ", "simply ", "slightly ", "so ", "specifically ", "start ", "strongly ", "stuff ", "surely ", "things ", "too ", "totally ", "truly ", "try ", "typically ", "ultimately ", "usually ", "very ", "virtually ", "well ", "whatever ", "whenever ", "whereve r", "whoever ", "widely "];
+
+            function checkFillerWords(trans, filler) {
+                var fillersUsed = new Array();
+                for (var i = 0; i < trans.length; i++) {
+                    for (var n = 0; n < filler.length; n++) {
+                        if (trans[i] == filler[n]) {
+                            fillersUsed.push(filler[n]);
+                        }
+                    }
+                }
+                return fillersUsed;
+            }
+
+            function getFillerWordScore(fillerCount, textLength) {
+                var maxFillerCount = textLength * 0.1; // once in 10 words
+                var fillerScore = 0;
+
+                fillerScore = map_range(fillerCount, 0, maxFillerCount, 0, 10);
+                fillerScore = 10 - fillerScore;
+
+                if (fillerScore < 0) fillerScore = 0;
+
+                fillerScore = Math.floor(fillerScore);
+
+                return fillerScore;
+            }
+
+            function countMovement(data, howLong) {
+                var section = Math.round(data.length / howLong);
+                var count = 0;
+                var c = 0;
+                var s = 0;
+                var border = 5;
+                var index = 0;
+                var steepCount = 0;
+                var iBefore = 0;
+                var jBefore = 0;
+
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = i + 1; j < data.length; j++) {
+
+
+                        if (Math.abs(data[i] - data[j]) / j - i < 0.5) {
+                            c++;
+                        }
+
+                        if (Math.abs(data[i] - data[j]) > border || i == data.length - 1 || j == data.length - 1) {
+                            if (c > section * 5) {
+
+                                if (s != 0 && iBefore != 0 && jBefore != 0) {
+                                    var yDif = Math.abs(data[iBefore] - data[jBefore]);
+                                    var xDif = jBefore - iBefore;
+                                    var num = yDif / xDif;
+                                    //num = num.toFixed(2);
+                                    num = cutDecimal(num);
+                                    console.log("!! STEEP: " + iBefore + " ~ " + jBefore + " , " + num);
+
+                                    if (num > 0.5) {
+                                        steepCount++;
+                                    }
+                                }
+
+                                console.log("BIGGER: " + i + " ~ " + j + " , " + c);
+                                iBefore = 0;
+                                jBefore = 0;
+                                c = 0;
+                                i = j;
+                                s = 0;
+
+                            } else if (c >= section * 3 && c <= section * 5) {
+
+                                if (s != 0 && iBefore != 0 && jBefore != 0) {
+                                    var yDif = Math.abs(data[iBefore] - data[jBefore]);
+                                    var xDif = jBefore - iBefore;
+                                    var num = yDif / xDif;
+                                    //num = num.toFixed(2);
+                                    num = cutDecimal(num);
+                                    console.log("!! STEEP: " + iBefore + " ~ " + jBefore + " , " + num);
+
+                                    if (num > 0.5) {
+                                        steepCount++;
+                                    }
+                                }
+
+                                console.log("GOOD: " + i + " ~ " + j + " , " + c);
+                                iBefore = 0;
+                                jBefore = 0;
+                                c = 0;
+                                i = j;
+                                s = 0;
+
+                            } else if (c < section * 3) {
+                                if (Math.abs(data[i] - data[j]) / Math.abs(j - i) > 0.5) {
+                                    if (s == 0) {
+                                        iBefore = i;
+                                    }
+                                    jBefore = j;
+
+                                    c = 0;
+                                    i = j;
+                                    s++;
+
+                                } else {
+                                    if (s != 0 && iBefore != 0 && jBefore != 0) {
+                                        var yDif = Math.abs(data[iBefore] - data[jBefore]);
+                                        var xDif = jBefore - iBefore;
+                                        var num = yDif / xDif;
+                                        //num = num.toFixed(2);
+                                        num = cutDecimal(num);
+                                        console.log("!! STEEP: " + iBefore + " ~ " + jBefore + " , " + num);
+
+                                        if (num > 0.5) {
+                                            steepCount++;
+                                        }
+
+                                    }
+
+                                    console.log("SMALLER: " + i + " ~ " + j + " , " + c);
+                                    iBefore = 0;
+                                    jBefore = 0;
+                                    c = 0;
+                                    i = j;
+                                    s = 0;
+                                }
+                            }
+                            //break;
+                        }
+
+                        if (i == data.length - 1 || j == data.length - 1) {
+                            if (s != 0 && iBefore != 0 && jBefore != 0) {
+                                var yDif = Math.abs(data[iBefore] - data[jBefore]);
+                                var xDif = jBefore - iBefore;
+                                var num = yDif / xDif;
+                                //num = num.toFixed(2);
+                                num = cutDecimal(num);
+                                console.log("!! STEEP: " + iBefore + " ~ " + jBefore + " , " + num);
+
+                                if (num > 0.5) {
+                                    steepCount++;
+                                }
+
+                            }
+                        }
+                    }
+                }
+                return steepCount;
+            }
+
+            /******  *******/
+
+            function post() {
+                var as1 = new $.Deferred();
+                
+                // length of the video
+                var vidLength = mySeconds;
+
+                // pitch
+                var pitch = JSON.stringify(pitchArray);
+                var pitchNoNull = deleteNullFromArray(pitchArray);
+                var pitchVarianceArray = calculateVariance(pitchNoNull);
+                var pitchVarianceVal = addArrayDataDivideByTime(pitchVarianceArray, vidLength);
+
+
+                // the eye gaze - face direction
+                rightDirectionArray = returnArrayWithNoNull(rightDirectionArray);
+                var face = JSON.stringify(rightDirectionArray);
+                var stareCount = countMovement(rightDirectionArray, vidLength);
+                var gazeScore = getGazeScore(stareCount, vidLength);
+                console.log("GAZE SCORE: " + gazeScore);
+
+                // facial expression
+                // first get variance array of all 4 data
+                var smileVarianceArray = calculateVariance(smileDataArray);
+                var angerVarianceArray = calculateVariance(angerDataArray);
+                var sadnessVarianceArray = calculateVariance(sadnessDataArray);
+                var surpriseVarianceArray = calculateVariance(surpriseDataArray);
+                // then add all into 1 array - piling up each data on one value and make another array - variance added up
+                var emotionVarianceArray = add4Array(smileVarianceArray, angerVarianceArray, sadnessVarianceArray, surpriseVarianceArray);
+                // then put into JSON string
+                var emotion = minimizeData(emotionVarianceArray);
+                emotion = JSON.stringify(emotion);
+                // + get emotion variance index
+                var emotionVarianceVal = addArrayDataDivideByTime(emotionVarianceArray, vidLength);
+
+                var smileRate = addArrayDataDivideByTime(smileVarianceArray, vidLength);
+                var mood = getMood(smileRate);
+
+                // pause
+                var pauseAverage = countPauseAvg(pitchArray, vidLength);
+                var pauseScore = getPauseScore(pauseAverage);
+
+                // volume
+                var volume = JSON.stringify(smoothedVolume);
+                var volumeVarianceArray = calculateVariance(smoothedVolume);
+                var volumeVarianceVal = addArrayDataDivideByTime(volumeVarianceArray, vidLength);
+                var volumeScore = getVolumeScore(volumeVarianceVal);
+
+                // transcript
+                var words = complete_transcript.split(" ");
+                for (var i = 0; i < words.length - 1; i++) {
+                    words[i] += " ";
+                }
+                // get fillers
+                var fillers = new Array();
+                fillers = checkFillerWords(words, fillerWords);
+                var fillerWordCount = fillers.length;
+                var fillerWordScore = getFillerWordScore(fillerWordCount, words.length);
+                console.log("fillerWordScore: " + fillerWordScore);
+
+                // get words per second
+                var wordCount = words.length;
+                var wpm = getWPM(wordCount, vidLength);
+                var speedScore = getSpeedScore(wpm);
+                console.log("SPEED SCORE: " + speedScore);
+
+                // gazeScore, smileScore, speedScore
+                var overallScore = 0;
+                overallScore += gazeScore;
+                overallScore += volumeScore;
+                overallScore += pauseScore;
+                overallScore += speedScore;
+                overallScore += fillerWordScore;
+                overallScore = overallScore / 5;
+                overallScore = Math.round(overallScore);
+                console.log("OVERALL SCORE: " + overallScore);
+
+                var overview = [{
+                    "score": overallScore,
+                    "speed score": speedScore,
+                    "pause score": pauseScore,
+                    "volume score": volumeScore,
+                    "filler score": fillerWordScore,
+                    "gaze score": gazeScore,
+                    "length": vidLength,
+                    "transcript length": words.length,
+                    "smile": smileRate,
+                    "mood": mood,
+                    "emotion": emotionVarianceVal,
+                    "pitch": pitchVarianceVal,
+                    "speed": wpm,
+                    "pause": pauseAverage,
+                    "volume": volumeVarianceVal,
+                    "filler": fillerWordCount,
+                    "gaze": stareCount
+                }];
+
+                var myOverview = JSON.stringify(overview);
+                console.log(myOverview);
+
+                $.post('save.php', {
+                        posttext: words,
+                        postvolume: volume,
+                        postpitch: pitch,
+                        postemotion: emotion,
+                        postoverview: myOverview,
+                        postdirection: face
+                    },
+                    function (data) {
+                        //                        $('#result').html(data);
+                        //alert("DONE!");
+                        document.getElementById('progress_inner').style.width = '50%';
+                        document.getElementById("progress_state").innerHTML = "sending video...";
+                        as1.resolve();
+                    });
+                return as1.promise();
+            }
+        </script>
+
+        <!--JS FOR TIME KEEPING-->
+        <script type="text/javascript">
+            var myTime;
+            var myStart;
+            var myStop;
+            var mySeconds;
+            var myMillis;
+
+            function timerStart() {
+                myStart = new Date();
+            }
+
+            function timerStop() {
+                myStop = new Date();
+                myTime = myStop.getTime() - myStart.getTime();
+                mySeconds = Math.floor(myTime / 1000);
+                myMillis = myTime % 1000;
+            }
+        </script>
+
+        <!--JS FOR VIDEO RECORDING-->
+        <script>
+            (function () {
+                var params = {},
+                    r = /([^&=]+)=?([^&]*)/g;
+
+                function d(s) {
+                    return decodeURIComponent(s.replace(/\+/g, ' '));
+                }
+
+                var match, search = window.location.search;
+                while (match = r.exec(search.substring(1))) {
+                    params[d(match[1])] = d(match[2]);
+
+                    if (d(match[2]) === 'true' || d(match[2]) === 'false') {
+                        params[d(match[1])] = d(match[2]) === 'true' ? true : false;
+                    }
+                }
+
+                window.params = params;
+            })();
+
+            function intallFirefoxScreenCapturingExtension() {
+                InstallTrigger.install({
+                    'Foo': {
+                        // URL: 'https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/',
+                        URL: 'https://addons.mozilla.org/firefox/downloads/file/355418/enable_screen_capturing_in_firefox-1.0.006-fx.xpi?src=cb-dl-hotness',
+                        toString: function () {
+                            return this.URL;
+                        }
+                    }
+                });
+            }
+
+
+
+            // attrubutes modified
+            var recordingDIV = document.querySelector('.recordrtc');
+            var recordingMedia;
+            var recordingPlayer = recordingDIV.querySelector('video');
+            var mediaContainerFormat;
+
+
+            window.onbeforeunload = function () {
+                recordingDIV.querySelector('button').disabled = false;
+                recordingMedia.disabled = false;
+                mediaContainerFormat.disabled = false;
+            };
+
+
+            recordingDIV.querySelector('button').onclick = function () {
+                var button = this;
+
+                if (button.innerHTML === 'Stop Recording') {
+                    button.disabled = true;
+                    button.disableStateWaiting = true;
+                    setTimeout(function () {
+                        button.disabled = false;
+                        button.disableStateWaiting = false;
+                    }, 2 * 1000);
+
+                    button.innerHTML = 'Start Recording';
+
+                    function stopStream() {
+                        if (button.stream && button.stream.stop) {
+                            button.stream.stop();
+                            button.stream = null;
+                        }
+                    }
+
+                    if (button.recordRTC) {
+                        if (button.recordRTC.length) {
+                            button.recordRTC[0].stopRecording(function (url) {
+                                if (!button.recordRTC[1]) {
+                                    button.recordingEndedCallback(url);
+                                    stopStream();
+                                    // modified! deleted
+                                    saveToServer(button.recordRTC[0]);
+                                    return;
+                                }
+
+                                button.recordRTC[1].stopRecording(function (url) {
+                                    button.recordingEndedCallback(url);
+                                    stopStream();
+                                });
+                            });
+                        } else {
+                            button.recordRTC.stopRecording(function (url) {
+                                button.recordingEndedCallback(url);
+                                stopStream();
+                                // modified! deleted
+                                //alert("HI3");
+                                document.getElementById('progress_outer').style.display = 'inherit';
+                                //post();
+                                //setTimeout(saveToServer, 1000, button.recordRTC);
+                                //saveToServer(button.recordRTC);
+                                
+                                post().then(saveToServer(button.recordRTC)).then(updateProgressAtEnd);
+                                
+                                
+                            });
+                        }
+                    }
+
+                    return;
+                }
+
+                button.disabled = true;
+
+                var commonConfig = {
+                    onMediaCaptured: function (stream) {
+                        button.stream = stream;
+                        if (button.mediaCapturedCallback) {
+                            button.mediaCapturedCallback();
+                        }
+
+                        button.innerHTML = 'Stop Recording';
+                        button.disabled = false;
+                    },
+                    onMediaStopped: function () {
+                        button.innerHTML = 'Start Recording';
+
+                        if (!button.disableStateWaiting) {
+                            button.disabled = false;
+                        }
+                    },
+                    onMediaCapturingFailed: function (error) {
+                        if (error.name === 'PermissionDeniedError' && !!navigator.mozGetUserMedia) {
+                            intallFirefoxScreenCapturingExtension();
+                        }
+
+                        commonConfig.onMediaStopped();
+                    }
+                };
+
+                var mimeType = 'video/webm';
+
+                // modified!!
+                function recordAudioPlusVideo() {
+                    captureAudioPlusVideo(commonConfig);
+
+                    button.mediaCapturedCallback = function () {
+
+                        if (typeof MediaRecorder === 'undefined') { // opera or chrome etc.
+                            button.recordRTC = [];
+
+                            if (!params.bufferSize) {
+                                // it fixes audio issues whilst recording 720p
+                                params.bufferSize = 16384;
+                            }
+
+                            var options = {
+                                type: 'audio',
+                                bufferSize: typeof params.bufferSize == 'undefined' ? 0 : parseInt(params.bufferSize),
+                                sampleRate: typeof params.sampleRate == 'undefined' ? 44100 : parseInt(params.sampleRate),
+                                leftChannel: params.leftChannel || false,
+                                disableLogs: params.disableLogs || false,
+                                recorderType: webrtcDetectedBrowser === 'edge' ? StereoAudioRecorder : null
+                            };
+
+                            if (typeof params.sampleRate == 'undefined') {
+                                delete options.sampleRate;
+                            }
+
+                            // commentout from here
+                            var audioRecorder = RecordRTC(button.stream, options);
+
+                            var videoRecorder = RecordRTC(button.stream, {
+                                type: 'video',
+                                disableLogs: params.disableLogs || false,
+                                canvas: {
+                                    width: params.canvas_width || 20,
+                                    height: params.canvas_height || 15
+                                },
+                                frameInterval: typeof params.frameInterval !== 'undefined' ? parseInt(params.frameInterval) : 200,
+                                // minimum time between pushing frames to Whammy (in milliseconds) default is 20
+                                frameInterval: 200
+                            });
+
+                            // to sync audio/video playbacks in browser!
+                            videoRecorder.initRecorder(function () {
+                                audioRecorder.initRecorder(function () {
+                                    audioRecorder.startRecording();
+                                    videoRecorder.startRecording();
+                                });
+                            });
+
+                            button.recordRTC.push(audioRecorder, videoRecorder);
+
+                            button.recordingEndedCallback = function () {
+                                var audio = new Audio();
+                                audio.src = audioRecorder.toURL();
+                                audio.controls = true;
+                                audio.autoplay = true;
+                                // changed!!!!
+                                //audio.autoplay = false;
+
+                                audio.onloadedmetadata = function () {
+                                    recordingPlayer.src = videoRecorder.toURL();
+                                    recordingPlayer.play();
+                                };
+
+                                recordingPlayer.parentNode.appendChild(document.createElement('hr'));
+                                recordingPlayer.parentNode.appendChild(audio);
+
+                                if (audio.paused) audio.play();
+
+                                alert("ended record");
+                            };
+                            return;
+                        }
+
+                        // the audio+video pushed
+                        button.recordRTC = RecordRTC(button.stream, {
+                            type: 'video',
+                            mimeType: mimeType,
+                            disableLogs: params.disableLogs || false,
+                            bitsPerSecond: 128000,
+                            // bitsPerSecond: 25 * 8 * 1025 // 25 kbits/s
+                            getNativeBlob: false // enable it for longer recordings
+                        });
+
+                        button.recordingEndedCallback = function (url) {
+                            recordingPlayer.muted = false;
+                            recordingPlayer.removeAttribute('muted');
+                            recordingPlayer.src = url;
+                            //                                                        recordingPlayer.play();
+
+                            recordingPlayer.onended = function () {
+                                recordingPlayer.pause();
+                                recordingPlayer.src = URL.createObjectURL(button.recordRTC.blob);
+                            };
+                        };
+                        button.recordRTC.startRecording();
+                    };
+                }
+                recordAudioPlusVideo();
+            };
+
+            function captureAudioPlusVideo(config) {
+                captureUserMedia({
+                    video: true,
+                    audio: true
+                }, function (audioVideoStream) {
+                    recordingPlayer.srcObject = audioVideoStream;
+                    recordingPlayer.play();
+
+                    config.onMediaCaptured(audioVideoStream);
+
+                    audioVideoStream.onended = function () {
+                        config.onMediaStopped();
+                    };
+                }, function (error) {
+                    config.onMediaCapturingFailed(error);
+                });
+            }
+
+            function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+                var isBlackBerry = !!(/BB10|BlackBerry/i.test(navigator.userAgent || ''));
+                if (isBlackBerry && !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia)) {
+                    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                    navigator.getUserMedia(mediaConstraints, successCallback, errorCallback);
+                    return;
+                }
+
+                navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+            }
+
+            function setMediaContainerFormat(arrayOfOptionsSupported) {
+                var options = Array.prototype.slice.call(
+                    mediaContainerFormat.querySelectorAll('option')
+                );
+
+                var selectedItem;
+                options.forEach(function (option) {
+                    option.disabled = true;
+
+                    if (arrayOfOptionsSupported.indexOf(option.value) !== -1) {
+                        option.disabled = false;
+
+                        if (!selectedItem) {
+                            option.selected = true;
+                            selectedItem = option;
+                        }
+                    }
+                });
+            }
+
+            if (webrtcDetectedBrowser === 'edge') {
+                // webp isn't supported in Microsoft Edge
+                // neither MediaRecorder API
+                // so lets disable both video/screen recording options
+
+                console.warn('Neither MediaRecorder API nor webp is supported in Microsoft Edge. You cam merely record audio.');
+
+                recordingMedia.innerHTML = '<option value="record-audio">Audio</option>';
+                setMediaContainerFormat(['WAV']);
+            }
+
+            if (webrtcDetectedBrowser === 'firefox') {
+                // Firefox implemented both MediaRecorder API as well as WebAudio API
+                // Their MediaRecorder implementation supports both audio/video recording in single container format
+                // Remember, we can't currently pass bit-rates or frame-rates values over MediaRecorder API (their implementation lakes these features)
+
+                //recordingMedia.innerHTML = '<option value="record-audio-plus-video">Audio+Video</option>' + '<option value="record-audio-plus-screen">Audio+Screen</option>' + recordingMedia.innerHTML;
+
+                setMediaContainerFormat(['WebM', 'Mp4']);
+            }
+
+
+            if (webrtcDetectedBrowser === 'chrome') {
+                if (typeof MediaRecorder === 'undefined') {
+                    console.info('This RecordRTC demo merely tries to playback recorded audio/video sync inside the browser. It still generates two separate files (WAV/WebM).');
+                }
+            }
+
+            function saveToServer(recordRTC) {
+                return function(){
+                if (!recordRTC) return alert('No recording found!');
+                var audioVideoBlob = recordRTC.blob;
+                uploadBlob(audioVideoBlob);
+                document.getElementById("progress_state").innerHTML = "almost done...";
+                }
+            }
+            
+            function updateProgressAtEnd(){
+                var as3 = new $.Deferred();
+                setTimeout(function(){
+                    document.getElementById("progress_state").style.display = "none";
+                    speechVid.style.background = "url('img/check.svg') no-repeat center";
+                    speechVid.style.backgroundSize = "contain";
+                    as3.resolve();
+                }, 1000);
+                    console.log("video sent");
+                return as3.promise();
+            }
+            
+            
+            // video upload
+            function uploadBlob(blob) {
+                var as2 = new $.Deferred();
+                var formData = new FormData();
+                formData.append('video-blob', blob);
+                formData.append('video-filename', 'practiceVideo.webm');
+                $.ajax({
+                    url: "saveVideo.php",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        //alert('Successfully uploaded.');
+                        //speechVid.style.background = "url('http://cdn.onlinewebfonts.com/svg/img_411304.svg')";
+                        document.getElementById('progress_inner').style.width = '100%';
+                        as2.resolve();
+
+                    },
+                    error: function (jqXHR, textStatus, errorMessage) {
+                        alert('Error:' + JSON.stringify(errorMessage));
+                    }
+                });
+                return as2.promise();
+            }
+        </script>
+
+        <!--JS FOR PITCH-->
+        <script type="text/javascript">
+            toggleLiveInput();
+        </script>
+
+        <!--JS FOR VOLUME-->
+        <script type="text/javascript" charset="utf-8">
+            
+            // the written
+            var audioContext = null;
+            var meter = null;
+            var canvasContext = null;
+            var WIDTH = 500;
+            var HEIGHT = 50;
+            var rafID = null;
+
+            start();
+
+            function start() {
+
+                // grab our canvas
+                canvasContext = document.getElementById("meter").getContext("2d");
+
+                // monkeypatch Web Audio
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+                // grab an audio context
+                audioContext = new AudioContext();
+
+                // Attempt to get audio input
+                try {
+                    // monkeypatch getUserMedia
+                    navigator.getUserMedia =
+                        navigator.getUserMedia ||
+                        navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia;
+
+                    // ask for an audio input
+                    navigator.getUserMedia({
+                        "audio": {
+                            "mandatory": {
+                                "googEchoCancellation": "false",
+                                "googAutoGainControl": "false",
+                                "googNoiseSuppression": "false",
+                                "googHighpassFilter": "false"
+                            },
+                            "optional": []
+                        },
+                    }, gotStream, didntGetStream);
+                } catch (e) {
+                    alert('getUserMedia threw exception :' + e);
+                }
+            }
+
+
+            function didntGetStream() {
+                alert('Stream generation failed.');
+            }
+
+            var mediaStreamSource = null;
+
+            function gotStream(stream) {
+                // Create an AudioNode from the stream.
+                mediaStreamSource = audioContext.createMediaStreamSource(stream);
+
+                // Create a new volume meter and connect it.
+                meter = createAudioMeter(audioContext);
+                mediaStreamSource.connect(meter);
+
+                // kick off the visual updating
+                drawLoopy();
+            }
+
+            function drawLoopy(time) {
+                // clear the background
+                canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
+
+                // check if we're currently clipping
+                if (meter.checkClipping())
+                    canvasContext.fillStyle = "red";
+                else
+                    canvasContext.fillStyle = "green";
+
+                // draw a bar based on the current volume
+                canvasContext.fillRect(0, 0, meter.volume * WIDTH * 1.4, HEIGHT);
+
+                // set up the next visual callback
+                rafID = window.requestAnimationFrame(drawLoopy);
+
+                // ADDED
+                level = meter.volume;
+                level = numToWhole(level);
+                //                updatefilter(level);
+                if (on === true) {
+                    smoothedVolume.push(level);
+                }
+
+            }
+
+            var smoothedVolume = new Array();
+
+
+            // DRAWING METER
+
+            function createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
+                var processor = audioContext.createScriptProcessor(512);
+                processor.onaudioprocess = volumeAudioProcess;
+                processor.clipping = false;
+                processor.lastClip = 0;
+                processor.volume = 0;
+                processor.clipLevel = clipLevel || 0.98;
+                processor.averaging = averaging || 0.95;
+                processor.clipLag = clipLag || 750;
+
+                // this will have no effect, since we don't copy the input to the output,
+                // but works around a current Chrome bug.
+                processor.connect(audioContext.destination);
+
+                processor.checkClipping =
+                    function () {
+                        if (!this.clipping)
+                            return false;
+                        if ((this.lastClip + this.clipLag) < window.performance.now())
+                            this.clipping = false;
+                        return this.clipping;
+                    };
+
+                processor.shutdown =
+                    function () {
+                        this.disconnect();
+                        this.onaudioprocess = null;
+                    };
+
+                return processor;
+            }
+
+            function volumeAudioProcess(event) {
+                var buf = event.inputBuffer.getChannelData(0);
+                var bufLength = buf.length;
+                var sum = 0;
+                var x;
+
+                // Do a root-mean-square on the samples: sum up the squares...
+                for (var i = 0; i < bufLength; i++) {
+                    x = buf[i];
+                    if (Math.abs(x) >= this.clipLevel) {
+                        this.clipping = true;
+                        this.lastClip = window.performance.now();
+                    }
+                    sum += x * x;
+                }
+
+                // ... then take the square root of the sum.
+                var rms = Math.sqrt(sum / bufLength);
+
+                // Now smooth this out with the averaging factor applied
+                // to the previous sample - take the max here because we
+                // want "fast attack, slow release."
+                this.volume = Math.max(rms, this.volume * this.averaging);
+            }
+            
+        </script>
+
+        <!--FACE TRACKING-->
+        <script>
+            // for emotion tracking
+            var angerIndex = 'angry!';
+            var angerDataArray = new Array();
+
+            var sadnessIndex = 'sad!';
+            var sadnessDataArray = new Array();
+
+            var surpriseIndex = 'surprised!';
+            var surpriseDataArray = new Array();
+
+            var smileIndex = 'happy!';
+            var smileDataArray = new Array();
+            var cp;
+            var er;
+
+            // for face direction
+            var fp;
+            var middleIndex;
+            var leftIndex;
+            var rightIndex;
+            var leftDistance;
+            var rightDistance;
+            var horizontalDistance;
+
+            var leftProportion; // [0] in array when sent
+            var rightProportion; // [1] in array when sent
+            var direction = new Array(); // [0] = left, [1] = right
+
+            var leftDirectionArray = new Array();
+            var rightDirectionArray = new Array();
+            var faceDirectionArray = new Array();
+            var faceMovementArray = new Array();
+
+            var on = false;
+
+            var vid = document.getElementById('videoel');
+            var overlay = document.getElementById('overlay');
+            var overlayCC = overlay.getContext('2d');
+
+            // check and set up video/webcam 
+
+            function enablestart() {
+                var startbutton = document.getElementById('startbutton');
+            }
+
+
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+            window.URL = window.URL || window.webkitURL || window.msURL || window.mozURL;
+
+            // check for camerasupport
+            if (navigator.getUserMedia) {
+                // set up stream
+
+                var videoSelector = {
+                    video: true
+                };
+                if (window.navigator.appVersion.match(/Chrome\/(.*?) /)) {
+                    var chromeVersion = parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10);
+                    if (chromeVersion < 20) {
+                        videoSelector = "video";
+                    }
+                };
+
+                navigator.getUserMedia(videoSelector, function (stream) {
+                    if (vid.mozCaptureStream) {
+                        vid.mozSrcObject = stream;
+                    } else {
+                        vid.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
+                    }
+                    vid.play();
+                }, function () {
+                    //insertAltVideo(vid);
+                    alert("There was some problem trying to fetch video from your webcam. If you have a webcam, please make sure to accept when the browser asks for access to your webcam.");
+                });
+            } else {
+                //insertAltVideo(vid);
+                alert("This demo depends on getUserMedia, which your browser does not seem to support. :(");
+            }
+
+            vid.addEventListener('canplay', enablestart, false);
+
+            //setup of emotion detection
+
+            var ctrack = new clm.tracker({
+                useWebGL: true
+            });
+            ctrack.init(pModel);
+
+            window.onload = function () {
+                startVideo();
+            }
+
+
+            function startVideo() {
+                // start video
+                vid.play();
+                // start tracking
+                ctrack.start(vid);
+                // start loop to draw face
+                if (smileDataArray) {
+                    drawLoops();
+                }
+            }
+
+            function getDistance(a, b) {
+                var xDistance = Math.pow(a[0] - b[0], 2);
+                var yDistance = Math.pow(a[1] - b[1], 2);
+
+                var distance = Math.sqrt(xDistance + yDistance);
+                distance = Math.floor(distance);
+                return distance;
+            }
+
+            function getProportion(n, d) {
+                // n for nemerator, d for denominator
+                return n / d;
+            }
+
+            // used inside compareOldNewData()
+            function checkMovement(oldData, newData) {
+                // Data[0] = left side proportion
+                // Data[1] = right side proportion
+                var leftDif = Math.abs(oldData[0] - newData[0]);
+                var rightDif = Math.abs(oldData[1] - newData[1]);
+                var average = (leftDif + rightDif) / 2;
+                return average;
+            }
+
+            function numToWhole(a) {
+                var n = a * 100;
+                n = Math.round(n);
+                return n;
+            }
+
+            var index = 0;
+            var buffer = new Array();
+            var sortBuffer = [50, 50, 50, 50, 50];
+            var BUFFER_LENGTH = 20;
+            var INDEX_OF_MIDDLE = 10;
+
+            function smoothByMedianFilter() {
+                // copy data to the buffer array for the sorting
+                for (var i = 0; i < BUFFER_LENGTH; i++) {
+                    sortBuffer[i] = buffer[i];
+                }
+
+                // sort
+                sortBuffer.sort(sortNumber);
+
+                // return the middle index in the sorting buffere array
+                return sortBuffer[INDEX_OF_MIDDLE];
+            }
+
+
+            function sortNumber(a, b) {
+                return a - b;
+            }
+
+
+            function drawLoops() {
+                requestAnimFrame(drawLoops);
+                overlayCC.clearRect(0, 0, 400, 300);
+                //psrElement.innerHTML = "score :" + ctrack.getScore().toFixed(4);
+                if (ctrack.getCurrentPosition()) {
+                    ctrack.draw(overlay);
+                    //                    console.log("YES FACE FOUND");
+                } else {
+                    //                    console.log("NO FACE FOUND");
+                }
+
+                fp = ctrack.getCurrentPosition();
+                if (fp) {
+                    middleIndex = fp[62];
+                    rightIndex = fp[12];
+                    leftIndex = fp[2];
+
+                    leftDistance = getDistance(leftIndex, middleIndex);
+                    rightDistance = getDistance(rightIndex, middleIndex);
+                    horizontalDistance = getDistance(leftIndex, rightIndex);
+
+                    leftProportion = getProportion(leftDistance, horizontalDistance);
+                    rightProportion = getProportion(rightDistance, horizontalDistance);
+                    direction[0] = numToWhole(leftProportion);
+                    direction[1] = numToWhole(rightProportion);
+
+
+                    if (on === true) {
+                        if (direction !== null) {
+                            //leftDirectionArray.push(direction[0]);
+                            // rightDirectionArray.push(direction[1]);
+                            buffer[index] = direction[1];
+
+                            rightDirectionArray.push(smoothByMedianFilter());
+                            index = (index + 1) % BUFFER_LENGTH;
+                            //                            console.log(index);
+                        }
+                    }
+                }
+
+
+                // for smile 
+                cp = ctrack.getCurrentParameters();
+
+                er = ec.meanPredict(cp);
+                if (er) {
+                    updateData(er);
+                    angerIndex = er[0]['value'];
+                    angerIndex = numToWhole(angerIndex);
+
+                    sadnessIndex = er[1]['value'];
+                    sadnessIndex = numToWhole(sadnessIndex);
+
+                    surpriseIndex = er[2]['value'];
+                    surpriseIndex = numToWhole(surpriseIndex);
+
+                    smileIndex = er[3]['value'];
+                    smileIndex = numToWhole(smileIndex);
+
+                    if (on === true) {
+                        if (smileIndex !== null) {
+                            smileDataArray.push(smileIndex);
+                        }
+                        if (angerIndex !== null) {
+                            angerDataArray.push(angerIndex);
+                        }
+                        if (sadnessIndex !== null) {
+                            sadnessDataArray.push(sadnessIndex);
+                        }
+                        if (surpriseIndex !== null) {
+                            surpriseDataArray.push(surpriseIndex);
+                        }
+                    }
+                }
+            }
+
+            var ec = new emotionClassifier();
+            ec.init(emotionModel);
+            var emotionData = ec.getBlank();
+
+            //d3 code for barchart
+
+            var margin = {
+                    top: 20,
+                    right: 20,
+                    bottom: 10,
+                    left: 40
+                },
+                width = 400 - margin.left - margin.right,
+                height = 100 - margin.top - margin.bottom;
+
+            var barWidth = 30;
+
+            var formatPercent = d3.format(".0%");
+
+            var x = d3.scale.linear()
+                .domain([0, ec.getEmotions().length]).range([margin.left, width + margin.left]);
+
+            var y = d3.scale.linear()
+                .domain([0, 1]).range([0, height]);
+
+            var svg = d3.select("#emotion_chart").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+
+            svg.selectAll("rect").
+            data(emotionData).
+            enter().
+            append("svg:rect").
+            attr("x", function (datum, index) {
+                return x(index);
+            }).
+            attr("y", function (datum) {
+                return height - y(datum.value);
+            }).
+            attr("height", function (datum) {
+                return y(datum.value);
+            }).
+            attr("width", barWidth).
+            attr("fill", "#2d578b");
+
+            svg.selectAll("text.labels").
+            data(emotionData).
+            enter().
+            append("svg:text").
+            attr("x", function (datum, index) {
+                return x(index) + barWidth;
+            }).
+            attr("y", function (datum) {
+                return height - y(datum.value);
+            }).
+            attr("dx", -barWidth / 2).
+            attr("dy", "1.2em").
+            attr("text-anchor", "middle").
+            text(function (datum) {
+                return datum.value;
+            }).
+            attr("fill", "white").
+            attr("class", "labels");
+
+            svg.selectAll("text.yAxis").
+            data(emotionData).
+            enter().append("svg:text").
+            attr("x", function (datum, index) {
+                return x(index) + barWidth;
+            }).
+            attr("y", height).
+            attr("dx", -barWidth / 2).
+            attr("text-anchor", "middle").
+            attr("style", "font-size: 12").
+            text(function (datum) {
+                return datum.emotion;
+            }).
+            attr("transform", "translate(0, 18)").
+            attr("class", "yAxis");
+
+            function updateData(data) {
+                // update
+                var rects = svg.selectAll("rect")
+                    .data(data)
+                    .attr("y", function (datum) {
+                        return height - y(datum.value);
+                    })
+                    .attr("height", function (datum) {
+                        return y(datum.value);
+                    });
+                var texts = svg.selectAll("text.labels")
+                    .data(data)
+                    .attr("y", function (datum) {
+                        return height - y(datum.value);
+                    })
+                    .text(function (datum) {
+                        return datum.value.toFixed(1);
+                    });
+
+                // enter 
+                rects.enter().append("svg:rect");
+                texts.enter().append("svg:text");
+
+                // exit
+                rects.exit().remove();
+                texts.exit().remove();
+            }
+        </script>
+
+    </article>
+
+    <div class="navbar navbar-default navbar-static-bottom footer">
+        <div class="container">
+            <p class="navbar-text pull-right">website built by Yuka Hirose</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Presentation Upgrader | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--    <link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <link href="https://bootswatch.com/superhero/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="http://www.amcharts.com/lib/3/amcharts.js" type="text/javascript"></script>
+    <script src="http://www.amcharts.com/lib/3/serial.js" type="text/javascript"></script>
+    <script src="http://www.amcharts.com/lib/3/radar.js" type="text/javascript"></script>
+    <script src="https://www.amcharts.com/lib/3/gauge.js"></script>
+    <script src="js/displayUserData.js"></script>
+    <link rel="shortcut icon" href="">
+    <style>
+        .mini-box {
+            height: 250px;
+            width: 100%;
+        }
+        
+        .big-box {
+            height: 340px;
+            width: 100%;
+        }
+        
+        @media screen and (min-width: 992px) {
+            .originalBorderRight {
+                border-right: solid 15px #2c3e50;
+            }
+            .originalBorderLeft {
+                border-left: solid 15px #2c3e50;
+            }
+        }
+        
+        .addMarginLeft {
+            margin-left: 10px;
+        }
+        
+        .addSmallMarginBottom {
+            margin-bottom: 33px;
+        }
+        
+        #moodMeter {
+            text-align: center;
+            display: table-cell;
+            vertical-align: middle;
+        }
+        
+        #moodMeterBefore {
+            text-align: right;
+            width: 100%;
+            height: 20px;
+            padding-right: 10px;
+            margin-bottom: 0;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .centerMiddle {
+            text-align: center;
+            display: table;
+            height: 225px;
+            width: 100%;
+        }
+        
+        .smallText {
+            margin-left: 10px;
+            font-size: 25px;
+        }
+        
+        .bigText {
+            font-size: 40px;
+        }
+        
+        .bottomText {
+            width: 100%;
+            margin-left: 15px;
+            /*            color: #6CDDFF;*/
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+
+                <a class="navbar-brand" href="index.html">Presentation Upgrader</a>
+
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="upload.html">Record</a>
+                    </li>
+                    <li>
+                        <a href="analysis.php">Analysis</a>
+                    </li>
+                    <li>
+                        <a href="http://web.sfc.keio.ac.jp/~t13779yh/FAQ/">FAQ</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    <div class="container addMarginTop">
+        <div class="row">
+            <h3 class="resetMargin addMarginBottom" style="margin-right:15px; margin-left:15px"><i class="material-icons md-32 verticalMiddle">timeline</i> Practice Overview</h3>
+            <div class="panel panel-default panel-body addMarginBottom" style="margin-right:15px; margin-left:15px">
+                <!--Left side-->
+                <div class="col-md-8">
+                    <div id="overviewDiv" style="width: 100%; height: 500px;"></div>
+                </div>
+                <!--Right side-->
+                <div class="col-md-4">
+                    <div id="improvementRate" style="width: 100%; height: 500px;"></div>
+                </div>
+            </div>
+            
+            <h3 class="resetMargin addMarginBottom" style="margin-right:15px; margin-left:15px"><i class="material-icons md-32 verticalMiddle">timeline</i> Categorized Score Over Time</h3>
+            <div class="panel panel-default panel-body addMarginBottom" style="margin-right:15px; margin-left:15px">
+                <!--Left side-->
+                <div class="col-md-8">
+                    <div id="categoryDiv" style="width: 100%; height: 500px;"></div>
+                </div>
+                <!--Right side-->
+                <div class="col-md-4">
+                    <div id="radarchartDiv" style="width: 100%; height: 500px;"></div>
+                </div>
+            </div>
+
+
+            <div class="col-md-8 addMarginBottom">
+
+                <div class="addMarginBottom">
+                    <h3 class="resetMargin addMarginBottom"><i class="material-icons md-32 verticalMiddle">assignment</i> Development of Speech Skills</h3>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Speed</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="speedDevelopDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Volume</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="volumeDevelpDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Average Pause Seconds per Minute</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="pauseDevelopDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default addMarginBottom">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Filler Words</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="fillerDevelopDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="resetMargin addMarginBottom"><i class="material-icons md-32 verticalMiddle">assignment</i> Development of Non Verbal Skills</h3>
+                    
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Average Eye Contact / Face Movement per Minute</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="gazeDevelopDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Mood</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="moodDevelopDiv" style="width: 100%; height: 150px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-4 addMarginBottom">
+                <div class="addMarginBottom">
+                    <h3 class="resetMargin addMarginBottom"><i class="material-icons md-32 verticalMiddle">assessment</i> Advice</h3>
+
+                    <div class="panel panel-default panel-body" style="font-size: 18px;">
+                        <span style="margin-left:10px;">You should Work on:</span>
+                        <h3 id="adviceTitle" style="margin-top:10px; color:#D6607B" class="addMarginLeft"></h3>
+                        <div id="adviceDiv" style="padding:10px;"></div>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+
+    <div class="navbar navbar-default navbar-static-bottom footer">
+        <div class="container">
+            <p class="navbar-text pull-right">website built by Yuka Hirose</p>
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

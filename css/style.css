@@ -1,0 +1,93 @@
+.centerBlock {
+    display: center;
+    text-align:center;
+}
+
+.footer {
+    margin-bottom: 0;
+    margin-top: 0px;
+}
+
+.resetMargin{
+    margin-top:0px;
+    margin-bottom: 0px;
+}
+
+.addMarginBottom {
+    margin-bottom: 50px;
+}
+
+h3.addMarginBottom {
+    margin-bottom: 15px;
+}
+
+h4.addMarginBottom{
+    margin-bottom: 10px;
+}
+
+.addMarginTop{
+    margin-top: 50px;
+}
+
+.addSmallerMarginTop{
+    margin-top: 30px;
+}
+
+.center {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.darkBlue{
+    color: #2c3e50;
+}
+
+.material-icons.verticalMiddle{
+    vertical-align:middle;
+}
+
+.material-icons.md-32 {
+    font-size: 32px; 
+}
+
+.material-icons.md-22 {
+    font-size: 22px; 
+}
+
+
+/*comments*/
+.rating {
+    float:left;
+    /* width:300px; */
+}
+.rating span {
+  float:right;
+  position:relative;
+}
+
+.rating span input {
+    position:absolute;
+    top:0px;
+    left:0px;
+    opacity:0;
+}
+.rating span label {
+    display:inline-block;
+    width:30px;
+    height:30px;
+    -webkit-mask: url(http://www.chacabucogolf.com.ar/wp-content/plugins/wp-app-maker/asset-studio/res/clipart/icons/star.svg) no-repeat 50% 50%;
+  mask: url(http://www.chacabucogolf.com.ar/wp-content/plugins/wp-app-maker/asset-studio/res/clipart/icons/star.svg) no-repeat 50% 50%;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  
+    background-size:30px;
+    background-color:grey;
+    margin-right:2px;
+    line-height:30px;
+}
+.rating span:hover ~ span label,
+.rating span:hover label,
+.rating span.checked label,
+.rating span.checked ~ span label {
+    background:#f39c12;
+}
