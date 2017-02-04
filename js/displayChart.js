@@ -196,7 +196,7 @@ AmCharts.ready(function () {
         drawChart3();
         drawChart4();
         drawChart5();
-        drawChart6();
+        //drawChart6();
         displayTranscript();
         console.log("pitch: " + pitch.length);
         console.log("emotion : " + emotion.length);
