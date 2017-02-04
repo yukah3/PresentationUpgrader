@@ -134,6 +134,8 @@ AmCharts.ready(function () {
     }
 
     function getGrowthRate(pastVal, presentVal) {
+        pastVal += 1;
+        presentVal += 1;
         return cutDecimal((presentVal - pastVal) / pastVal);
     }
 
@@ -559,7 +561,7 @@ AmCharts.ready(function () {
         var valueA7 = new AmCharts.ValueAxis();
         valueA7.gridColor = "#EBEBEB";
         valueA7.axisColor = "#EBEBEB";
-        valueA7.maximum = 3;
+        //valueA7.maximum = 3;
         chart7.categoryAxis.gridColor = "#EBEBEB";
         chart7.categoryAxis.axisColor = "#EBEBEB";
         chart7.categoryAxis.startOnAxis = true;
@@ -692,9 +694,21 @@ AmCharts.ready(function () {
             fillerGrowthRate = getGrowthRate(overview[0]['filler score'], overview[overview.length - 1]['filler score']);
             gazeGrowthRate = getGrowthRate(overview[0]['gaze score'], overview[overview.length - 1]['gaze score']);
         }
+        
+        if(speedGrowthRate == Infinity) speedGrowthRate = 10;
+        if(pauseGrowthRate == Infinity) pauseGrowthRate = 10;
+        if(volumeGrowthRate == Infinity) volumeGrowthRate = 10;
+        if(fillerGrowthRate == Infinity) fillerGrowthRate = 10;
+        if(gazeGrowthRate == Infinity) gazeGrowthRate = 10;
+        
+        
+        
+        
         console.log(speedGrowthRate + " : " + pauseGrowthRate + " : " + volumeGrowthRate + " : " + fillerGrowthRate + " : " + gazeGrowthRate);
 
         var smallest = Math.min(speedGrowthRate, pauseGrowthRate, volumeGrowthRate, fillerGrowthRate, gazeGrowthRate);
+        console.log(smallest);
+        
         var title;
         var text;
         switch (smallest) {
