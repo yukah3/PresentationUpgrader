@@ -347,6 +347,8 @@
                             <div id="volumechartdiv" style="width: 100%; height: 150px;"></div>
                         </div>
                     </div>
+                    
+<!--
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Pitch</h3>
@@ -355,6 +357,8 @@
                             <div id="pitchchartdiv" style="width: 100%; height: 150px;"></div>
                         </div>
                     </div>
+-->
+                    
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Transcript</h3>
